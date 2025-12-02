@@ -76,3 +76,7 @@ RAG（Retrieval-Augmented Generation）借助外部知識庫來降低 LLM 的幻
 
 - 雲端部署（GCP / AWS）
 
+## 📝 Note
+- 如果要使用 OCR 記得需要安裝 POPPLER + Tesseract, 並設定環境變數
+  - https://github.com/UB-Mannheim/tesseract/wiki
+  - https://github.com/oschwartz10612/poppler-windows/releases/
