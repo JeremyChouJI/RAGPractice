@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual Environment
+.venv/
+venv/
+env/
+
+# VSCode
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Chroma / FAISS / Vector DB
+chroma_db/
+faiss_index/
+index/
+data_source/
+
+# Logs
+*.log
+
+# Cache
+.cache/
+
