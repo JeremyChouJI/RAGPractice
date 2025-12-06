@@ -6,7 +6,7 @@ from langchain_google_genai import (
     GoogleGenerativeAIEmbeddings,
     ChatGoogleGenerativeAI,
 )
-from loaders.pdf_loader import pdf_loader 
+from utils.pdf_loader import pdf_loader 
 from langchain_core.documents import Document
 from models.rag import rag_answer
 

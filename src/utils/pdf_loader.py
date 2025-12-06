@@ -13,7 +13,7 @@ if TESSERACT_CMD:
     pytesseract.pytesseract.tesseract_cmd = TESSERACT_CMD
 
 class pdf_loader:
-    def load_pdf(self, file_path: str) -> str:
+    def _load_pdf(self, file_path: str) -> str:
         reader = PdfReader(file_path)
         text = ""
         for page in reader.pages:
@@ -28,7 +28,7 @@ class pdf_loader:
             if filename.lower().endswith(".pdf"):
                 pdf_path = os.path.join(folder_path, filename)
                 print(f"📄 Loading PDF：{filename}")
-                all_text += self.load_pdf(pdf_path) + "\n"
+                all_text += self._load_pdf(pdf_path) + "\n"
         return all_text
     
     def load_pdfs_from_folder(self, folder_path: str) -> List[Document]:
@@ -47,7 +47,7 @@ class pdf_loader:
 
         return all_docs
     
-    def ocr_pdf_page(self, file_path: str, page_number_1based: int, lang: str = "chi_tra+eng") -> str:
+    def _ocr_pdf_page(self, file_path: str, page_number_1based: int, lang: str = "chi_tra+eng") -> str:
         images = convert_from_path(
             file_path,
             first_page=page_number_1based,
@@ -84,7 +84,7 @@ class pdf_loader:
             if not text.strip():
                 try:
                     #print(f"Using OCR...")
-                    text = self.ocr_pdf_page(file_path, page_number)
+                    text = self._ocr_pdf_page(file_path, page_number)
                 except Exception as e:
                     #print(f"⚠️  OCR also failed on page {page_number}: {e}")
                     text = ""

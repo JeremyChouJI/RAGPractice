@@ -5,8 +5,9 @@ from langchain_google_genai import (
     GoogleGenerativeAIEmbeddings,
     ChatGoogleGenerativeAI,
 )
+import utils.snippet as SNIP
 
-def retrieve_docs(
+def _retrieve_docs(
     vector_store: Chroma,
     query: str,
     *,
@@ -54,7 +55,7 @@ def rag_answer(
     doc_type: Optional[str] = None,
     filename: Optional[str] = None,
 ) -> str:
-    results = retrieve_docs(
+    results = _retrieve_docs(
         vector_store,
         question,
         k=k,
@@ -66,6 +67,8 @@ def rag_answer(
         return "我在知識庫裡找不到跟這個問題足夠相關的內容。"
     
     docs = [doc for doc, score in results]
+    snippets = SNIP.build_snippets(question, docs)
+    snippet_block = SNIP.format_snippets_for_prompt(snippets)
     context = "\n\n".join(d.page_content for d in docs)
 
     #下prompt
@@ -75,6 +78,9 @@ def rag_answer(
 
              [知識庫內容]
              {context}
+
+             [重點摘錄片段]
+             {snippet_block}
 
              [問題]
              {question}
