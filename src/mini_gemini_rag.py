@@ -8,7 +8,8 @@ from langchain_google_genai import (
 )
 from utils.pdf_loader import pdf_loader 
 from langchain_core.documents import Document
-from models.rag import rag_answer
+from models.rag import MyRetriever
+from models.chat_session import RagChatSession
 
 if "GOOGLE_API_KEY" not in os.environ:
     raise RuntimeError("Please set the GOOGLE_API_KEY in your environment variables first.")
@@ -47,13 +48,14 @@ llm = ChatGoogleGenerativeAI(
 
 if __name__ == "__main__":
     print("\n=========================================\n")
+    retriever = MyRetriever(vector_store)
+    chat = RagChatSession(llm=llm, retriever=retriever)
+
     while True:
         question = input("What do you wanna ask？(type \"exit\" to exit) > ")
         if question.lower() == "exit":
             break
-        answer = rag_answer(
-            llm,
-            vector_store,
+        answer = chat.ask(
             question,
             k=5,
             score_threshold=1.0,
