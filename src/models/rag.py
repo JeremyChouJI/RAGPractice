@@ -34,7 +34,7 @@ class MyRetriever:
                     continue
 
             if filename is not None:
-                if str(doc.metadata.get("source")).lower != filename.lower():
+                if str(doc.metadata.get("source")).lower() != filename.lower():
                     continue
 
             filtered.append((doc, score))

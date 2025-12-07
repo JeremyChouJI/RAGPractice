@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from typing import List, Literal, Optional
 
 from langchain_google_genai import ChatGoogleGenerativeAI
-from models.rag import MyRetriever
+from ..models.rag import MyRetriever
 
 
 Role = Literal["user", "assistant"]

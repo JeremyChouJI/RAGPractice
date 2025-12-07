@@ -2,7 +2,7 @@
 
 > 使用 Python、LangChain、Google Gemini 打造的 RAG 練習專案。  
 > 支援 PDF、CSV、OCR、Chroma DB、Metadata Filter、Score Threshold 等進階功能。  
-> 本專案適合想從 0 到進階、循序學習 RAG 的開發者。
+> 本專案想從 0 到進階、循序學習 RAG 的開發者。
 
 ---
 
@@ -32,7 +32,7 @@
   - 嚴格遵守「資料沒有就說不知道」
 
 - **📦 Modules 可擴充**
-  - 後續可加入 FastAPI、Docker、RAG 評估、Snippet 高亮等功能
+  - 加入 FastAPI、Docker、RAG 評估、Snippet 高亮等功能
 
 ---
 ## 🧠RAG Workflow
@@ -62,19 +62,19 @@ RAG（Retrieval-Augmented Generation）借助外部知識庫來降低 LLM 的幻
 
 ## 📝 Roadmap
 
-- Score threshold 自動調整
+- ⬜ Score threshold 自動調整
 
-- CSV Tool Mode（結構化查詢 Router）
+- ⬜ CSV Tool Mode（結構化查詢 Router）
 
-- 多輪對話支援 + Snippet 高亮
+- ✅ 多輪對話支援 + Snippet 高亮
 
-- RAG 評估工具（不同 chunk size / k 表現）
+- ⬜ RAG 評估工具（不同 chunk size / k 表現）
 
-- FastAPI 推論 API
+- ✅ FastAPI inference API
 
-- Docker 化
+- ⬜ Docker 化
 
-- 雲端部署（GCP / AWS）
+- ⬜ 雲端部署（GCP / AWS）
 
 ## 📝 Note
 - 如果要使用 OCR 記得需要安裝 POPPLER + Tesseract, 並設定環境變數
