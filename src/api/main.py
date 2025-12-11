@@ -61,7 +61,8 @@ class ChatRequest(BaseModel):
 
 app = FastAPI()
 
-frontend_path = os.path.join(os.path.dirname(__file__), "../../frontend")
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+frontend_path = os.path.join(BASE_DIR, "frontend")
 app.mount("/static", StaticFiles(directory=frontend_path), name="static")
 
 
