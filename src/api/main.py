@@ -1,181 +1,83 @@
-import os
-from typing import Optional
-
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+import os
 
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import Chroma
+from src.models.rag import MyRetriever
+from src.models.chat_session import RagChatSession
 from langchain_google_genai import (
     GoogleGenerativeAIEmbeddings,
     ChatGoogleGenerativeAI,
 )
-
-from ..utils.pdf_loader import pdf_loader
-from ..models.rag import MyRetriever
-from ..models.chat_session import RagChatSession
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
-
-app = FastAPI(title="RAG Chat API")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import Chroma
+from src.utils.pdf_loader import pdf_loader 
 
 if "GOOGLE_API_KEY" not in os.environ:
-    raise RuntimeError("Please set the GOOGLE_API_KEY in your environment variables first.")
+    raise RuntimeError("Please set the GOOGLE_API_KEY in environment variables.")
 
 PDF = pdf_loader()
-
-# 如果都是在專案根目錄執行 uvicorn，那這裡用相對路徑就可以
-folder_path = "data_source"
-
+folder_path = "./data_source"
 raw_docs = PDF.load_pdfs_from_folder(folder_path)
+
 if not raw_docs:
     raise RuntimeError("❌ No PDFs found in the folder, or all PDFs failed to extract any text.")
+    #print("⚠️ No PDFs found in the folder, The answer will be generated using only the information already available in the knowledge base.")
 
 text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=200,
-    chunk_overlap=30,
+    chunk_size=500,
+    chunk_overlap=80,
 )
 chunks = text_splitter.split_documents(raw_docs)
+print(f"Split into {len(chunks)} chunks.")
 
 embeddings = GoogleGenerativeAIEmbeddings(
-    model="models/text-embedding-004",
+    model="models/text-embedding-004"
 )
 
 vector_store = Chroma.from_documents(
     documents=chunks,
     embedding=embeddings,
     collection_name="demo_rag",
+    persist_directory="./chroma_db",
 )
 
-my_retriever = MyRetriever(vector_store)
+retriever = MyRetriever(vector_store)
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite")
 
-llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-pro",
-    temperature=0.2,
-)
-
-chat_session = RagChatSession(
+session = RagChatSession(
     llm=llm,
-    retriever=my_retriever,
+    retriever=retriever,
+    max_history_turns=6
 )
 
-
-# Request / Response schema
 class ChatRequest(BaseModel):
     question: str
-    k: int = 5
-    score_threshold: Optional[float] = 0.4
-    doc_type: Optional[str] = None
-    filename: Optional[str] = None
+    k: int | None = None
+    score_threshold: float | None = None
+    doc_type: str | None = None
+    filename: str | None = None
+
+app = FastAPI()
+
+frontend_path = os.path.join(os.path.dirname(__file__), "../../frontend")
+app.mount("/static", StaticFiles(directory=frontend_path), name="static")
 
 
-class ChatResponse(BaseModel):
-    answer: str
-
-
-# 對外的 API endpoint
-
-@app.post("/chat", response_model=ChatResponse)
-def chat(req: ChatRequest):
-    """
-    對話式 RAG 查詢：
-    - 會帶上過去幾輪歷史（RagChatSession._format_history）
-    - 會用你的 MyRetriever 做檢索與過濾
-    """
-    answer = chat_session.ask(
-        question=req.question,
-        k=req.k,
-        score_threshold=req.score_threshold,
-        doc_type=req.doc_type,
-        filename=req.filename,
-    )
-    return ChatResponse(answer=answer)
-    
-@app.post("/api/chat", response_model=ChatResponse)
-def chat_alias(req: ChatRequest):
-    return chat(req)
-
-@app.get("/", response_class=HTMLResponse)
+@app.get("/")
 def home():
-    return """
-    <html>
-    <head>
-        <title>RAG Chatbot - Home</title>
-    </head>
+    return FileResponse(os.path.join(frontend_path, "index.html"))
+if "GOOGLE_API_KEY" not in os.environ:
+    raise RuntimeError("Please set the GOOGLE_API_KEY in your environment variables first.")
 
-    <body style="font-family: sans-serif; padding: 40px; line-height: 1.6;">
-
-        <h1>📚 Welcome to the RAG Chatbot API</h1>
-
-        <p>
-            這是一個使用 FastAPI + Gemini + Chroma 的 RAG Chatbot API。<br>
-            你可以：
-        </p>
-        <ul>
-            <li>上傳 PDF 產生知識庫</li>
-            <li>使用 /chat 路由進行問答</li>
-            <li>使用 Swagger UI 查看 API 說明文件</li>
-        </ul>
-
-        <p>👉 點下面的按鈕進入 API 文件：</p>
-
-        <button onclick="goDocs()" 
-                style="padding: 10px 20px; font-size: 16px; cursor: pointer;">
-            打開 API 說明文件（/docs）
-        </button>
-
-        <script>
-        function goDocs() {
-            window.location.href = "/docs";
-        }
-        </script>
-
-        <hr style="margin: 40px 0;">
-
-        <h2>💬 Quick Demo Chat</h2>
-        <textarea id="input" rows="3" cols="60"
-                  placeholder="輸入你的問題"></textarea><br><br>
-        <button onclick="sendMessage()" style="padding: 8px 14px;">Send</button>
-
-        <pre id="output"></pre>
-
-        <script>
-        window.onload = function () {
-            document.getElementById("input").addEventListener("keydown", function(e) {
-                if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                }
-            });
-        };
-        async function sendMessage() {
-            const question = document.getElementById("input").value;
-            const res = await fetch("/chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    question: question,
-                    k: 5,
-                    score_threshold: null,
-                    doc_type: null,
-                    filename: null
-                })
-            });
-
-            const data = await res.json();
-            document.getElementById("output").textContent =
-                "\\nAssistant: " + data.answer;
-        }
-        </script>
-
-    </body>
-    </html>
-    """
+@app.post("/chat")
+def chat(request: ChatRequest):
+    answer = session.ask(
+        request.question,
+        k=request.k,
+        score_threshold=request.score_threshold,
+        doc_type=request.doc_type,
+        filename=request.filename
+    )
+    return {"answer": answer}

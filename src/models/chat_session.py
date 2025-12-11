@@ -41,7 +41,7 @@ class RagChatSession:
             filename: Optional[str] = None,
         ) -> str:
 
-        results = self.retriever.retriever( # MyRetriever，這邊是instance method，instance 是在 mini_gemini_rag.py 建立的
+        results = self.retriever.retrieve( # MyRetriever，這邊是instance method，instance 是在 mini_gemini_rag.py 建立的
             question,
             k=k,
             score_threshold=score_threshold,

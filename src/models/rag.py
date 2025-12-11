@@ -6,7 +6,7 @@ class MyRetriever:
     def __init__(self, vector_store: Chroma):
         self.vector_store = vector_store
 
-    def retriever(
+    def retrieve(
         self,
         query: str,
         *,
