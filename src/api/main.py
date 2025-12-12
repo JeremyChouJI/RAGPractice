@@ -10,38 +10,23 @@ from langchain_google_genai import (
     GoogleGenerativeAIEmbeddings,
     ChatGoogleGenerativeAI,
 )
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
-from src.utils.pdf_loader import pdf_loader 
 
 if "GOOGLE_API_KEY" not in os.environ:
     raise RuntimeError("Please set the GOOGLE_API_KEY in environment variables.")
 
-PDF = pdf_loader()
-folder_path = "./data_source"
-raw_docs = PDF.load_pdfs_from_folder(folder_path)
-
-if not raw_docs:
-    raise RuntimeError("❌ No PDFs found in the folder, or all PDFs failed to extract any text.")
-    #print("⚠️ No PDFs found in the folder, The answer will be generated using only the information already available in the knowledge base.")
-
-text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=500,
-    chunk_overlap=80,
-)
-chunks = text_splitter.split_documents(raw_docs)
-print(f"Split into {len(chunks)} chunks.")
-
 embeddings = GoogleGenerativeAIEmbeddings(
     model="models/text-embedding-004"
 )
-
-vector_store = Chroma.from_documents(
-    documents=chunks,
-    embedding=embeddings,
-    collection_name="demo_rag",
-    persist_directory="./chroma_db",
-)
+if os.path.exists("./chroma_db"):
+    vector_store = Chroma(
+        persist_directory="./chroma_db", 
+        embedding_function=embeddings,
+        collection_name="demo_rag"
+    )
+else:
+    # 這裡可以噴錯，提示使用者先跑 ingest.py
+    raise RuntimeError("❌ Vector DB not found! Please run 'python src/ingest.py' first.")
 
 retriever = MyRetriever(vector_store)
 llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite")
