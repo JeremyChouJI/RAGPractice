@@ -1,8 +1,9 @@
-# models/chat_session.py
+
 from dataclasses import dataclass, field
 from typing import List, Literal, Optional
 
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from ..models.rag import MyRetriever
 
 
@@ -27,7 +28,7 @@ class RagChatSession:
         recent = self.history[-self.max_history_turns:]
         lines = []
         for t in recent:
-            prefix = "使用者" if t.role == "user" else "助理"
+            prefix = "User" if t.role == "user" else "AI"
             lines.append(f"{prefix}: {t.content}")
         return "\n".join(lines)
 
@@ -53,25 +54,31 @@ class RagChatSession:
         context = "\n\n".join(d.page_content for d in docs)
         history_text = self._format_history()
 
-        prompt = f"""
-                 你是一個幫助使用者查詢 PDF / CSV 知識庫的 RAG 助理。
+        system_prompt = f"""
+                 你是一個幫助使用者查詢 PDF [知識庫內容]的 RAG AI 助理。
                  請遵守以下規則：
                  - 如果找不到明確答案，可以說不知道，或用你自己的推論，但要標註是推論。
                  - 可以使用先前的對話歷史來理解模糊問題。
 
-                 [對話歷史]
-                 {history_text if history_text else "（目前沒有歷史對話）"}
-
                  [知識庫內容]
                  {context}
-
-                 [使用者最新問題]
-                 {question}
-
-                 請用繁體中文回答。
+                 
+                 如果使用者用繁體中文回答，你就用繁體中文回答
+                 如果使用者用英文回答，你就用英文回答
                  """
+        messages = [
+            SystemMessage(content=system_prompt.format(context=context)),
+        ]
 
-        response = self.llm.invoke(prompt)
+        for t in self.history[-self.max_history_turns:]:
+            if t.role == "user":
+                messages.append(HumanMessage(content=t.content))
+            else:
+                messages.append(AIMessage(content=t.content))
+
+        messages.append(HumanMessage(content=question))
+
+        response = self.llm.invoke(messages)
         answer = response.content
 
         self.history.append(Turn(role="user", content=question))
