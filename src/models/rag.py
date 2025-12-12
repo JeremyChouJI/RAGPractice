@@ -16,30 +16,26 @@ class MyRetriever:
         filename: Optional[str] = None,   # filter with filename
     ) -> List[Tuple[Document, float]]:
 
-        # pass the query into similarity_search_with_score(), Chroma will automatically call your embedding model in the background and embed the query.
+        where_filter = {}
+        if doc_type:
+            where_filter["type"] = doc_type
+        if filename:
+            where_filter["source"] = filename
+        
+        if not where_filter:
+            where_filter = None
+
         raw_results = self.vector_store.similarity_search_with_score(
             query,
-            k=max(k + 10, int(k * 3)),
+            k=k, 
+            filter=where_filter 
         )
 
         filtered: List[Tuple[Document, float]] = []
-
         for doc, score in raw_results:
             if score_threshold is not None:
-                if score > score_threshold:
+                 if score > score_threshold:
                     continue
-
-            if doc_type is not None:
-                if str(doc.metadata.get("type")).lower() != doc_type.lower():
-                    continue
-
-            if filename is not None:
-                if str(doc.metadata.get("source")).lower() != filename.lower():
-                    continue
-
             filtered.append((doc, score))
-
-            if len(filtered) >= k:
-                break
-
+            
         return filtered
