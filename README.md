@@ -43,5 +43,6 @@ ragTutorial/
 │   └── utils/          # 工具函式 (PDF Loader, OCR 處理)
 ├── data_source/        # 放置 PDF 文件的目錄
 ├── frontend/           # 簡易 Web 介面
+├── evaluation/           # 評估模型
 ├── requirements.txt    # 專案依賴
 └── .env                # 環境變數設定
