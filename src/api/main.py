@@ -64,6 +64,7 @@ def chat(request: ChatRequest):
         k=request.k,
         score_threshold=request.score_threshold,
         doc_type=request.doc_type,
-        filename=request.filename
+        filename=request.filename,
+        return_contexts=False
     )
     return {"answer": answer}

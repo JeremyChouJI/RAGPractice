@@ -1,10 +1,9 @@
-
 from dataclasses import dataclass, field
-from typing import List, Literal, Optional
+from typing import List, Literal, Optional, Tuple, Union
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
-from ..models.rag import MyRetriever
+from src.models.rag import MyRetriever
 
 
 Role = Literal["user", "assistant"]
@@ -20,17 +19,7 @@ class RagChatSession:
     llm: ChatGoogleGenerativeAI
     retriever: MyRetriever
     history: List[Turn] = field(default_factory=list)
-    max_history_turns: int = 6  # 一次帶進 prompt 的歷史輪數（user+assistant 交錯算一輪）
-
-    def _format_history(self) -> str:
-        """把最近幾輪對話整理成文字丟進 prompt。"""
-
-        recent = self.history[-self.max_history_turns:]
-        lines = []
-        for t in recent:
-            prefix = "User" if t.role == "user" else "AI"
-            lines.append(f"{prefix}: {t.content}")
-        return "\n".join(lines)
+    max_history_turns: int = 6 
 
     def ask(
             self,
@@ -40,7 +29,8 @@ class RagChatSession:
             score_threshold: float = 0.4,
             doc_type: Optional[str] = None,
             filename: Optional[str] = None,
-        ) -> str:
+            return_contexts: bool = False
+        ) -> Union[str, Tuple[str, List[str]]]:
 
         results = self.retriever.retrieve( # MyRetriever，這邊是instance method，instance 是在 mini_gemini_rag.py 建立的
             question,
@@ -50,10 +40,10 @@ class RagChatSession:
             filename=filename,
         )
         
+        # 整理檢索到的文件
         docs = [doc for doc, score in results]
         context = "\n\n".join(d.page_content for d in docs)
-        history_text = self._format_history()
-
+        
         system_prompt = f"""
                  你是一個幫助使用者查詢 PDF [知識庫內容]的 RAG AI 助理。
                  請遵守以下規則：
@@ -66,8 +56,9 @@ class RagChatSession:
                  如果使用者用繁體中文回答，你就用繁體中文回答
                  如果使用者用英文回答，你就用英文回答
                  """
+        
         messages = [
-            SystemMessage(content=system_prompt.format(context=context)),
+            SystemMessage(content=system_prompt), # context 已經在 f-string 裡填進去了
         ]
 
         for t in self.history[-self.max_history_turns:]:
@@ -84,4 +75,10 @@ class RagChatSession:
         self.history.append(Turn(role="user", content=question))
         self.history.append(Turn(role="assistant", content=answer))
 
-        return answer
+        if return_contexts:
+            # Evaluation mode
+            context_texts = [d.page_content for d in docs]
+            return answer, context_texts
+        else:
+            # API mode
+            return answer
