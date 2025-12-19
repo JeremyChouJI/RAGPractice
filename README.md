@@ -9,19 +9,9 @@
 
 ## 📖 專案簡介 (Introduction)
 
-這個專案是一個輕量級但架構完整的 RAG (Retrieval-Augmented Generation) 實作。旨在解決 LLM 無法存取私有數據及幻覺 (Hallucination) 問題。
+本分支( `refactor/langchain-backend` )專注於使用 LangChain 框架建構 RAG (Retrieval-Augmented Generation) 的演示腳本 (Demo Scripts)。
 
-不同於常見的 Demo 腳本，本專案採用**分層架構 (Layered Architecture)** 設計，將資料處理 (Ingestion)、模型邏輯 (Model)、與 API 服務分離，並針對實際應用中常見的 **PDF 解析困難 (Dirty Data)** 問題實作了 OCR 容錯機制。
-
-### ✨ 核心功能 (Key Features)
-
-* **⚡ 高效能 LLM 整合**：串接 **Google Gemini-2.5-Flash**，利用其長文本優勢處理複雜 Context。
-* **👁️ 強健的 PDF 解析 (Robust Parsing)**：
-    * 使用 `pypdf` 進行初步提取。
-    * **OCR Fallback 機制**：當偵測到掃描檔或無法提取文字的頁面時，自動切換至 `Tesseract OCR` 進行光學辨識，確保資料召回率 (Recall)。
-* **🗄️ 持久化向量資料庫**：使用 **ChromaDB** 儲存 Embeddings，實現資料持久化，無需重複計算向量。
-* **🏗️ 模組化架構**：清晰分離前端、API 層與 RAG 核心邏輯，易於維護與擴充。
-* **🔍 精確檢索**：實作 Metadata Filtering (依檔名/類型過濾) 與信心分數門檻 (Score Threshold) 過濾。
+設計核心在於展示 RAG 的高層次架構與運作原理。因此，實作上最大程度地採用了 LangChain 的原生模組，不另行撰寫底層的客製化邏輯，旨在提供一個標準、清晰且易於理解的 RAG 流程範例。
 
 ## 🛠️ 技術棧 (Tech Stack)
 
@@ -30,7 +20,6 @@
 * **Vector DB**: ChromaDB (Local Persistence)
 * **Backend Framework**: FastAPI
 * **Orchestration**: LangChain
-* **PDF/OCR**: `pypdf`, `pdf2image`, `pytesseract` (Tesseract-OCR)
 * **Frontend**: Vanilla JS + HTML/CSS
 
 ## 📂 專案架構 (Project Structure)
@@ -50,5 +39,4 @@ ragTutorial/
 ## 🧴 瓶頸 (Bottle Neck)
 
 ```text
-- 2025/11/19 在評估模型時 Context Precision 和 Context Recall 經常為 0.0，代表檢索器經常抓不到正確的段落
-             這可能是 Chunking 策略不好，或是 Embedding Model 對中文/專業術語的語意理解不夠精準，原因仍在釐清中。
+- 
