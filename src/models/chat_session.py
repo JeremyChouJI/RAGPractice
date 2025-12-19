@@ -26,7 +26,7 @@ class RagChatSession:
             question: str,
             *,
             k: int = 5,
-            score_threshold: float = 0.4,
+            score_threshold: float = 0.8,
             doc_type: Optional[str] = None,
             filename: Optional[str] = None,
             return_contexts: bool = False

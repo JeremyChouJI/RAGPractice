@@ -8,20 +8,20 @@ from ragas.metrics import faithfulness, answer_relevancy, context_precision, con
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 
 BATCH_SIZE = 3      # 每次評測幾筆
-SLEEP_SECONDS = 60  # 每批跑完休息幾秒
+SLEEP_SECONDS = 10  # 每批跑完休息幾秒
 
 judge_llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash",
     temperature=0,
     max_retries=3,
-    request_timeout=60
+    request_timeout=10
 )
 
 eval_embeddings = GoogleGenerativeAIEmbeddings(
         model="models/text-embedding-004"
     )
 
-json_file_path = "./evaluation/benchmark_output/rag_results.json"
+json_file_path = "./evaluation/benchmark_output/rag_results_jieba.json"
 print(f"Loading {json_file_path} ...")
 
 try:
