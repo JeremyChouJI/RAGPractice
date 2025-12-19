@@ -49,6 +49,19 @@ ragTutorial/
 ```
 ## 🧴 瓶頸 (Bottle Neck)
 
-```text
-- 2025/11/19 在評估模型時 Context Precision 和 Context Recall 經常為 0.0，代表檢索器經常抓不到正確的段落
-             這可能是 Chunking 策略不好，或是 Embedding Model 對中文/專業術語的語意理解不夠精準，原因仍在釐清中。
+* 2025/11/19
+    ### 🐛 問題
+
+    在評估模型時 Context Precision 和 Context Recall 經常為 0.0，代表檢索器經常抓不到正確的段落，這可能是 Chunking 策略不好，或是 Embedding Model 對中文/專業術語的語意理解不夠精準，原因仍在釐清中 (已釐清)。
+
+    ### 🚧 Optimization Plan / 優化計畫
+
+    當前挑戰 : 目前的檢索評估指標表現未達預期。經分析，主要瓶頸在於 text-embedding-004 模型對英文存在語境偏好，導致中文查詢產生的向量表徵 (Vector Representations) 品質不夠精確。
+
+    * 解決方案 : 為突破純向量檢索 (Pure Vector Search) 的侷限，將進行以下重構：
+
+        * 引入 Hybrid Search：結合語意檢索與關鍵字比對，提升檢索召回率。
+
+        * 優化中文處理：引入 jieba 斷詞工具，以增強 BM25 演算法在繁體中文環境下的檢索效果。
+
+    * 開發分支說明 : 相關實作將移至 refactor/langchain-backend 分支進行，main 分支將暫時停止更新以維持穩定。
