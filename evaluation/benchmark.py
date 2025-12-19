@@ -10,13 +10,13 @@ from src.models.rag import MyRetriever
 from src.models.chat_session import RagChatSession
 
 DB_PATH = "./chroma_db"
-DATASET_PATH = "./evaluation/golden_dataset.json"
+DATASET_PATH = "./evaluation/golden_dataset/golden_dataset.json"
 
 def main():
     if "GOOGLE_API_KEY" not in os.environ:
         raise RuntimeError("❌ Please set the GOOGLE_API_KEY in your environment variables first.")
 
-    print(f"🔄 正在載入現有的向量資料庫: {DB_PATH}")
+    print(f"🔄 Loading existing vector database: {DB_PATH}")
     
     embeddings = GoogleGenerativeAIEmbeddings(
         model="models/text-embedding-004"
@@ -32,7 +32,7 @@ def main():
     )
 
     llm = ChatGoogleGenerativeAI(
-        model="gemini-2.0-flash", #gemini-2.5-flash-lite
+        model="gemini-2.5-flash-lite", #gemini-2.5-flash-lite
         temperature=0.5,
     )
 
@@ -56,7 +56,6 @@ def main():
 
     print(f"🚀 Starting automatic evaluation, with a total of {len(test_data)} questions...\n")
 
-    # 6. 批次執行
     for i, item in enumerate(test_data):
         q = item["question"]
         gt = item["ground_truth"]
@@ -93,10 +92,9 @@ def main():
             results["contexts"].append([])
             results["ground_truth"].append(gt)
             print("💤 Pausing for 30 seconds to avoid rate limiting (cooling down)...")
-            time.sleep(30)
+            time.sleep(20)
 
-    # 7. 存檔
-    output_file = "rag_results.json"
+    output_file = "./evaluation/benchmark_output/rag_results.json"
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
 

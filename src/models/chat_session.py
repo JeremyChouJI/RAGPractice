@@ -45,17 +45,16 @@ class RagChatSession:
         context = "\n\n".join(d.page_content for d in docs)
         
         system_prompt = f"""
-                 你是一個幫助使用者查詢 PDF [知識庫內容]的 RAG AI 助理。
-                 請遵守以下規則：
-                 - 如果找不到明確答案，可以說不知道，或用你自己的推論，但要標註是推論。
-                 - 可以使用先前的對話歷史來理解模糊問題。
+                You are a RAG AI assistant that helps users query PDF [knowledge base content].
+                Please follow the rules below:
+                - If a clear answer cannot be found, you may say you don’t know, or provide your own reasoning, but clearly label it as reasoning.
+                - You may use previous conversation history to understand ambiguous questions.
 
-                 [知識庫內容]
-                 {context}
-                 
-                 如果使用者用繁體中文回答，你就用繁體中文回答
-                 如果使用者用英文回答，你就用英文回答
-                 """
+                [Knowledge Base Content]
+                {context}
+
+                responds in English
+                """
         
         messages = [
             SystemMessage(content=system_prompt), # context 已經在 f-string 裡填進去了
