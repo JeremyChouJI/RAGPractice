@@ -9,7 +9,7 @@
 
 ## 📖 專案簡介 (Introduction)
 
-這個專案是一個輕量級但架構完整的 RAG (Retrieval-Augmented Generation) 實作。旨在解決 LLM 無法存取私有數據及幻覺 (Hallucination) 問題。
+這個專案( `main branch` )是一個輕量級但架構完整的 RAG (Retrieval-Augmented Generation) 實作。旨在解決 LLM 無法存取私有數據及幻覺 (Hallucination) 問題。
 
 不同於常見的 Demo 腳本，本專案採用**分層架構 (Layered Architecture)** 設計，將資料處理 (Ingestion)、模型邏輯 (Model)、與 API 服務分離，並針對實際應用中常見的 **PDF 解析困難 (Dirty Data)** 問題實作了 OCR 容錯機制。
 
@@ -39,7 +39,7 @@
 ragTutorial/
 ├── src/
 │   ├── api/            # FastAPI 路由與進入點
-│   ├── models/         # RAG 核心邏輯 (Retriever, ChatSession)
+│   ├── models/         # 自行撰寫的 RAG 核心邏輯 (Retriever, ChatSession)
 │   └── utils/          # 工具函式 (PDF Loader, OCR 處理)
 ├── data_source/        # 放置 PDF 文件的目錄
 ├── frontend/           # 簡易 Web 介面
