@@ -1,6 +1,0 @@
-[
-  {
-    "question": "Transformer 架構完全拋棄了哪兩種傳統的神經網路結構？",
-    "ground_truth": "拋棄了遞歸神經網絡 (RNN) 和卷積神經網絡 (CNN)。"
-  }
-]
