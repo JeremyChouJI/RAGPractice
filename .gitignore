@@ -23,7 +23,6 @@ data_source/
 evaluation/golden_dataset/
 evaluation/evaluation_result/
 evaluation/benchmark_output/
-evaluation/benchmark_output/create_golden_dataset.py
 
 # Logs
 *.log

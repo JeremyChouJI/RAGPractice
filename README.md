@@ -43,6 +43,12 @@ ragTutorial/
 │   └── utils/          # 工具函式 (PDF Loader, OCR 處理)
 ├── data_source/        # 放置 PDF 文件的目錄
 ├── frontend/           # 簡易 Web 介面
-├── evaluation/           # 評估模型
+├── evaluation/         # 評估模型
 ├── requirements.txt    # 專案依賴
 └── .env                # 環境變數設定
+```
+## 🧴 瓶頸 (Bottle Neck)
+
+```text
+- 2025/11/19 在評估模型時 Context Precision 和 Context Recall 經常為 0.0，代表檢索器經常抓不到正確的段落
+             這可能是 Chunking 策略不好，或是 Embedding Model 對中文/專業術語的語意理解不夠精準，原因仍在釐清中。
