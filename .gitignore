@@ -16,7 +16,8 @@ env/
 Thumbs.db
 
 # Chroma / FAISS / Vector DB
-chroma_db/
+chroma_db_chin/
+chroma_db_eng/
 faiss_index/
 index/
 data_source/
