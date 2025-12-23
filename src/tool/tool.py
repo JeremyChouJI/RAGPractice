@@ -110,7 +110,7 @@ class SalesDataToolBuilder:
         pandas_agent = create_pandas_dataframe_agent(
             llm,
             self.df,
-            verbose=True,
+            verbose=False,
             allow_dangerous_code_execution=True, #需要設定成True，因為它真的在執行 Python
             handle_parsing_errors=True
         )

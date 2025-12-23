@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  rag-agent:
+    build: .
+    container_name: rag-agent-container
+    volumes:
+      - ./src:/app/src
+
+      #DB掛載
+      - ./chroma_db_eng:/app/chroma_db_eng
+
+      #source data
+      - ./data_source:/app/data_source
+      
+      - ./.env:/app/.env
+      
+    env_file:
+      - .env
+    environment:
+      - TZ=Asia/Taipei
+      - PYTHONPATH=/app
+    
+    stdin_open: true
+    tty: true

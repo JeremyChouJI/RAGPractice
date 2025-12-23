@@ -1,0 +1,25 @@
+# .dockerignore
+
+.venv
+venv
+env
+__pycache__
+
+chroma_db_chin
+chroma_db_eng
+data
+data_source
+evaluation
+frontend
+
+.vscode
+.idea
+.git
+.gitignore
+
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.log
+.env

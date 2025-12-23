@@ -184,7 +184,7 @@ def main():
 
     # 建立 Agent
     agent = create_tool_calling_agent(llm, tools, prompt)
-    agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+    agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=False)
 
     print("\n=========================================")
     print("🧠 Agent (Gemini 2.5) + Hybrid RAG Ready")
