@@ -59,7 +59,7 @@ class HybridRAGToolBuilder:
             print("❌ Chroma DB is empty! Unable to build the RAG tool.")
             return
 
-        # 轉回 Document 物件
+        # BM25Retriever.from_documents(documents -> List[Document])
         doc_objects = [
             Document(page_content=text, metadata=meta) 
             for text, meta in zip(existing_texts, existing_metadatas)
@@ -93,15 +93,13 @@ class HybridRAGToolBuilder:
             它是混合檢索 (Hybrid Search)，對於 '專有名詞' 或 '具體概念' 特別有效。
             輸入請輸入完整的查詢問句。
             """
-            # 使用 ensemble retriever 來 retrieve
             docs = self.ensemble_retriever.invoke(query)
             
-            # 整理結果回傳給 LLM
-            results = []
+            result_contexts = []
             for i, doc in enumerate(docs):
-                results.append(f"--- Document section {i+1} ---\n{doc.page_content}")
+                result_contexts.append(f"--- Document section {i+1} ---\n{doc.page_content}")
             
-            return "\n\n".join(results)
+            return "\n\n".join(result_contexts)
 
         return search_knowledge_base
 
@@ -171,8 +169,8 @@ def main():
         print("❌ Error: No available tools. Program terminated.")
         return
 
-    # 綁定工具
-    llm_with_tools = llm.bind_tools(tools)
+    # 綁定工具，如果使用 AgentExecutor 這行則免
+    # llm_with_tools = llm.bind_tools(tools)
 
     prompt = ChatPromptTemplate.from_messages([
         ("system", (
