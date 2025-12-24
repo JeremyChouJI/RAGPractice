@@ -1,14 +1,17 @@
 import os
 import warnings
+import logging
 
 # LangChain
 from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-from src.tool.tool import HybridRAGToolBuilder, SalesDataToolBuilder
+from src.tool.tool import HybridRAGToolBuilder, SalesDataToolBuilder, TATQABenchmark
 
-warnings.filterwarnings("ignore")
+RUN_BENCHMARK = True # True -> 執行 evaluation
+BENCHMARK_FILE = "./data_source/tatqa_dataset_dev.json" # evaluation 資料集暫存位置
+# ==========================================
 
 if "GOOGLE_API_KEY" not in os.environ:
     print("⚠️ Please set the GOOGLE_API_KEY in your environment variables first.")
@@ -21,6 +24,16 @@ def main():
         temperature=0
     )
 
+    if RUN_BENCHMARK:
+        print("📊 Evaluation Mode...")
+        tester = TATQABenchmark(dataset_path=BENCHMARK_FILE)
+        tester.run(llm, limit=2)
+        
+        print("\nBenchmark Finished. Exiting.")
+        return
+
+    print("💬 Chat Mode...")
+    
     tools = []
     
     # Hybrid RAG
@@ -42,8 +55,8 @@ def main():
     # prompt
     prompt = ChatPromptTemplate.from_messages([
         ("system", (
-            "You are a smart AI assistant named 'Mengji-Bot'."
-            "You have two powerful tools:\n"
+            "You are a helpful assistant proficient in analyzing sales data and retrieving internal knowledge.\n"
+            "You have access to two powerful tools:\n"
             "1. [search_knowledge_base]: For textual knowledge, technical docs, and policies.\n"
             "2. [analyze_sales_data]: For ANY data analysis, math calculation, or finding insights from the sales CSV.\n\n"
             "Strategy:\n"

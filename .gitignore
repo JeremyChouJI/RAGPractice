@@ -25,7 +25,7 @@ evaluation/golden_dataset/
 evaluation/evaluation_result/
 evaluation/benchmark_output/
 data/
-
+temp_tatqa_context/
 # Logs
 *.log
 
