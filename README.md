@@ -8,7 +8,7 @@
 ![Docker](https://img.shields.io/badge/Docker-Container-2496ED?logo=docker&logoColor=white)
 
 ## 📖 專案簡介 (Overview)
-本專案開發了一套具備意圖路由 (Intent Routing) 功能的 AI Agent 系統，旨在透過 LLM 的推理能力解決複雜的使用者需求。系統採用模組化設計，將 RAG（檢索增強生成） 封裝為核心工具之一，專門處理領域知識檢索；同時整合 CSV 數據分析 Agent，用於處理結構化數據查詢。
+本專案開發了一套具備意圖路由 (Intent Routing) 功能的 AI Agent 系統，旨在透過 LLM 的推理能力解決複雜的使用者需求。系統採用模組化設計，將 RAG 封裝為核心工具之一，專門處理領域知識檢索；同時整合 CSV 數據分析 Agent，用於處理結構化數據查詢。
 
 ## 🛠️ 核心功能與技術
 
