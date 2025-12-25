@@ -12,7 +12,7 @@ def main():
         print(f"❌ 找不到 {INPUT_FILE}，請先執行 AI_Agent.py 生成回答。")
         return
 
-    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0)
 
     print(f"⚖️ AI Judge is reviewing {INPUT_FILE} ...")
     
@@ -83,13 +83,29 @@ def main():
     print("\n\n================ FINAL REPORT ================")
     df = pd.DataFrame(graded_results)
     
+    # 最終結果輸出
+    final_output = {
+        "summary": {
+            "total_accuracy": 0.0,
+            "total_count": len(graded_results),
+            "breakdown": {}
+        },
+        "details": graded_results
+    }
+    
     if not df.empty and 'type' in df.columns:
-        print(df.groupby("type")["passed"].mean().mul(100).round(1).astype(str) + "%")
+        type_stats_series = df.groupby("type")["passed"].mean().mul(100).round(1)
+        
+        print(type_stats_series.astype(str) + "%")
+        
         total_acc = df['passed'].mean() * 100
         print(f"\n🏆 Total Accuracy: {total_acc:.2f}%")
+        
+        final_output["summary"]["total_accuracy"] = round(total_acc, 2)
+        final_output["summary"]["breakdown"] = type_stats_series.to_dict() 
     
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-        json.dump(graded_results, f, ensure_ascii=False, indent=4)
+        json.dump(final_output, f, ensure_ascii=False, indent=4)
         
     print(f"💾 Graded report saved to: {OUTPUT_FILE}")
 
