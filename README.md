@@ -1,4 +1,4 @@
-# 👾 RAG 資料檢索與分析助手
+# 👾 基於意圖路由的混合式 AI Agent (Hybrid AI Agent with Intent Routing)
 ![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
 ![LangChain](https://img.shields.io/badge/LangChain-0.1+-orange.svg)
 ![Gemini](https://img.shields.io/badge/Model-Gemini%202.5-purple)
@@ -8,7 +8,7 @@
 ![Docker](https://img.shields.io/badge/Docker-Container-2496ED?logo=docker&logoColor=white)
 
 ## 📖 專案簡介 (Overview)
-開發一套基於檢索增強生成 (Retrieval-Augmented Generation, RAG) 技術的智慧問答系統。該專案旨在解決 LLM 的幻覺問題並增強對特定領域資料的理解能力。系統不僅支援非結構化文本的檢索，更整合了針對 CSV 結構化數據的分析功能，並採用現代化容器技術進行部署，具備高度的可移植性與擴充性。
+本專案開發了一套具備意圖路由 (Intent Routing) 功能的 AI Agent 系統，旨在透過 LLM 的推理能力解決複雜的使用者需求。系統採用模組化設計，將 RAG（檢索增強生成） 封裝為核心工具之一，專門處理領域知識檢索；同時整合 CSV 數據分析 Agent，用於處理結構化數據查詢。
 
 ## 🛠️ 核心功能與技術
 
