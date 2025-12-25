@@ -32,7 +32,7 @@
 ### 程式開發與架構 (Development & Architecture)
 - 工具: 
     - **LLM Framework**: LangChain
-    - **LLM Model**: Google Gemini-2.5-Flash
+    - **LLM Model**: Google Gemini-2.5-Flash / Gemini-2.5-Pro
     - **Embedding**: Google Generative AI Embeddings (`text-embedding-004`)
     - **Document Loader**: LangChain Community Loaders
     - **Vector DB**: ChromaDB (Local Persistence)
