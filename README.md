@@ -8,7 +8,7 @@
 ![Docker](https://img.shields.io/badge/Docker-Container-2496ED?logo=docker&logoColor=white)
 
 ## 📖 專案簡介 (Overview)
-本專案開發了一套具備意圖路由 (Intent Routing) 功能的 AI Agent 系統，旨在透過 LLM 的推理能力解決複雜的使用者需求。系統採用模組化設計，將 RAG 封裝為核心工具之一，專門處理領域知識檢索；同時整合 CSV 數據分析 Agent，用於處理結構化數據查詢。
+本專案開發了一套具備意圖路由 (Intent Routing) 功能的 AI Agent 系統，旨在透過 LLM 的推理能力解決複雜的使用者需求。系統採用模組化設計，將 RAG 封裝為核心工具之一，專門處理領域知識檢索。
 
 ## 🛠️ 核心功能與技術
 
@@ -16,10 +16,11 @@
 - Hybrid Search:
     - 實作結合「關鍵字檢索 (Keyword Search)」與「語意向量檢索 (Semantic Vector Search)」的混合搜尋演算法。
     - 有效解決單一向量檢索在面對專有名詞或精確匹配時的準確度不足問題。
+- Re-ranking:
+    - 整合 Cross-Encoder 進行二次精確排序，優化檢索結果的排列順序。
 
-- 多模態資料處理：
-    - 整合 CSV 檔案處理模組，使 Agent (Python REPL) 能夠讀取並理解結構化表格數據，並結合 LLM 進行數據推論與回答。
-
+    - 提升檢索系統在複雜問答場景下的準確性，確保輸入模型的 Context 具備最高關聯度。
+    
 ### 系統工程與部署 (System Engineering & Deployment)
 - Docker 部署：
     - 編寫 Dockerfile 建立標準化執行環境，解決 "It works on my machine" 的問題。
@@ -46,9 +47,8 @@
 ```text
 rag-project/
 ├── src/                    # 核心邏輯 (Backend & AI Agent)
-│   ├── tool/               # AI Agent 模型封裝
-│   └── ...                 # 其他核心功能模組
-├── frontend/               # 簡易使用者介面層 (User Interface)
+│   └── tool/               # AI Agent 模型封裝
+├── static/               # 簡易使用者介面層 (User Interface)
 ├── evaluation/             # RAG 效果評估模組 (用於測試檢索準確率與回答品質)
 ├── .env.example            # 環境變數範本 (隱藏敏感資訊，資安考量)
 ├── docker-compose.yaml     # 服務編排設定 (定義 Agent 與其他服務的連動)
