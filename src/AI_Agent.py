@@ -7,11 +7,8 @@ from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-from src.tool.tool import HybridRAGToolBuilder, SalesDataToolBuilder, TATQABenchmark
+from src.tool.tool import HybridRAGToolBuilder
 
-RUN_BENCHMARK = True # True -> 執行 evaluation
-BENCHMARK_FILE = "./data_source/tatqa_dataset_dev.json" # evaluation 資料集暫存位置
-# ==========================================
 
 if "GOOGLE_API_KEY" not in os.environ:
     print("⚠️ Please set the GOOGLE_API_KEY in your environment variables first.")
@@ -23,15 +20,6 @@ def main():
         model="gemini-2.5-flash",
         temperature=0
     )
-
-    if RUN_BENCHMARK:
-        print("📊 Evaluation Mode...")
-        tester = TATQABenchmark(dataset_path=BENCHMARK_FILE)
-        tester.run(llm, limit=2)
-        
-        print("\nBenchmark Finished. Exiting.")
-        return
-
     print("💬 Chat Mode...")
     
     tools = []
@@ -42,12 +30,6 @@ def main():
     if rag_tool:
         tools.append(rag_tool)
 
-    # Python REPL Sales Tool
-    csv_builder = SalesDataToolBuilder("./data_source/sales_data.csv")
-    csv_tool = csv_builder.get_tool(llm=llm) 
-    if csv_tool:
-        tools.append(csv_tool)
-
     if not tools:
         print("❌ Error: No available tools. Program terminated.")
         return
@@ -55,13 +37,11 @@ def main():
     # prompt
     prompt = ChatPromptTemplate.from_messages([
         ("system", (
-            "You are a helpful assistant proficient in analyzing sales data and retrieving internal knowledge.\n"
-            "You have access to two powerful tools:\n"
+            "You are a helpful assistant proficient in analyzing data and retrieving internal knowledge.\n"
+            "Currently, You only have access to one powerful tool:\n"
             "1. [search_knowledge_base]: For textual knowledge, technical docs, and policies.\n"
-            "2. [analyze_sales_data]: For ANY data analysis, math calculation, or finding insights from the sales CSV.\n\n"
             "Strategy:\n"
             "- If the user asks about 'procedures', 'concepts', or 'textual info', use RAG.\n"
-            "- If the user asks 'how many', 'sum', 'highest/lowest', 'trend', or 'compare', use analyze_sales_data.\n"
             "- Always think step-by-step."
         )),
         ("user", "{input}"),
@@ -69,7 +49,7 @@ def main():
     ])
 
     agent = create_tool_calling_agent(llm, tools, prompt)
-    agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=False)
+    agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
     print("\n=========================================")
     print("🚀 Agent is Ready! (Mode: Code Interpreter + RAG)")
