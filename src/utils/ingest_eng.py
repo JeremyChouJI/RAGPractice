@@ -26,7 +26,7 @@ def ingest_data():
     print(f"📄 Loaded {len(raw_docs)} document pages.")
 
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000,
+        chunk_size=500,
         chunk_overlap=100,
         separators=["\n\n", "\n", " ", ""]
     )
