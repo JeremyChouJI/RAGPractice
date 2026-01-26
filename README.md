@@ -18,9 +18,8 @@
     - 有效解決單一向量檢索在面對專有名詞或精確匹配時的準確度不足問題。
 - Re-ranking:
     - 整合 Cross-Encoder 進行二次精確排序，優化檢索結果的排列順序。
-
     - 提升檢索系統在複雜問答場景下的準確性，確保輸入模型的 Context 具備最高關聯度。
-    
+
 ### 系統工程與部署 (System Engineering & Deployment)
 - Docker 部署：
     - 編寫 Dockerfile 建立標準化執行環境，解決 "It works on my machine" 的問題。
