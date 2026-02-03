@@ -20,10 +20,10 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 # Vector Store & Retrievers
 from langchain_community.vectorstores import Chroma
 from langchain_community.retrievers import BM25Retriever
-from langchain.retrievers import EnsembleRetriever
+from langchain_classic.retrievers import EnsembleRetriever
 
 # Re-ranking
-from langchain.retrievers.contextual_compression import ContextualCompressionRetriever
+from langchain_classic.retrievers import ContextualCompressionRetriever
 from langchain_community.document_compressors import FlashrankRerank
 
 class HybridRAGToolBuilder:
@@ -43,7 +43,7 @@ class HybridRAGToolBuilder:
     def _initialize_hybrid_retriever(self):
 
         embeddings = GoogleGenerativeAIEmbeddings(
-            model="models/text-embedding-004",
+            model="models/gemini-embedding-001",
             task_type="retrieval_document"
         )
         
@@ -68,18 +68,18 @@ class HybridRAGToolBuilder:
         ]
 
         bm25_retriever = BM25Retriever.from_documents(documents=doc_objects)
-        bm25_retriever.k = 5
+        bm25_retriever.k = 20
 
         chroma_retriever = vector_store.as_retriever(
             search_type="similarity",
-            search_kwargs={"k": 5}
+            search_kwargs={"k": 20}
         )
 
         self.ensemble_retriever = EnsembleRetriever(
             retrievers=[bm25_retriever, chroma_retriever],
             weights=[0.5, 0.5]
         )
-        compressor = FlashrankRerank()
+        compressor = FlashrankRerank(top_n=8)
         self.compression_retriever = ContextualCompressionRetriever(
             base_compressor=compressor, base_retriever = self.ensemble_retriever
         )

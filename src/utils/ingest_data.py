@@ -1,8 +1,8 @@
 import os
 import glob
 
-from langchain_community.document_loaders import PyPDFDirectoryLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import DirectoryLoader, TextLoader, PyPDFLoader, PyPDFDirectoryLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
@@ -13,15 +13,15 @@ def ingest_data():
     print("🚀 Starting ingestion...")
     
     folder_path = "./data_source"
-    
-    if not os.path.exists(folder_path) or not glob.glob(os.path.join(folder_path, "*.pdf")):
-        print("❌ No documents found in ./data_source")
-        return
+
+    print("📂 Loading Text files...")
+    txt_loader = DirectoryLoader(folder_path, glob="**/*.txt", loader_cls=TextLoader, loader_kwargs={'encoding': 'utf-8'})
+    txt_docs = txt_loader.load()
 
     # 使用 LangChain 內建的 DirectoryLoader
-    print(f"📂 Loading PDFs from {folder_path}...")
-    loader = PyPDFDirectoryLoader(folder_path)
-    raw_docs = loader.load()
+    #print(f"📂 Loading PDFs from {folder_path}...")
+    #loader = PyPDFDirectoryLoader(folder_path)
+    raw_docs = txt_docs
     
     print(f"📄 Loaded {len(raw_docs)} document pages.")
 
@@ -33,7 +33,7 @@ def ingest_data():
     chunks = text_splitter.split_documents(raw_docs)
     print(f"📦 Split into {len(chunks)} chunks.")
 
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
+    embeddings = GoogleGenerativeAIEmbeddings(model="gemini-embedding-001")
     
     if os.path.exists("./chroma_db_eng"):
         print("⚠️  Existing DB found. Appending to it (or delete folder to reset).")
