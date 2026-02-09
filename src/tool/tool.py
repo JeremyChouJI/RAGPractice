@@ -79,7 +79,7 @@ class HybridRAGToolBuilder:
             retrievers=[bm25_retriever, chroma_retriever],
             weights=[0.5, 0.5]
         )
-        compressor = FlashrankRerank(top_n=8)
+        compressor = FlashrankRerank(top_n=10)
         self.compression_retriever = ContextualCompressionRetriever(
             base_compressor=compressor, base_retriever = self.ensemble_retriever
         )
