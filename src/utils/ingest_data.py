@@ -27,8 +27,10 @@ def ingest_data():
 
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=500,
-        chunk_overlap=100,
-        separators=["\n\n", "\n", " ", ""]
+        chunk_overlap=150,
+        #separators=["\n\n", "\n", " ", ""]
+        is_separator_regex=True,
+        separators=["\n\n", "(?<=\. )", "(?<=\! )", "(?<=\? )", "(?<=\.\" )", " ", ""]
     )
     chunks = text_splitter.split_documents(raw_docs)
     print(f"📦 Split into {len(chunks)} chunks.")
