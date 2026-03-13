@@ -1,4 +1,4 @@
-# 👾 基於意圖路由的混合式 AI Agent (Hybrid AI Agent with Intent Routing)
+# 👾 全端 RAG 檢索增強生成系統 (Full-stack RAG System)
 ![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
 ![LangChain](https://img.shields.io/badge/LangChain-0.1+-orange.svg)
 ![Gemini](https://img.shields.io/badge/Model-Gemini%202.5-purple)
